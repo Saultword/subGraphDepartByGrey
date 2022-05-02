@@ -61,7 +61,7 @@ class pic_select:#重要的筛选函数
            
        return outlist
     
- def transFer(self,inputpath,wrate,hrate,grate,layer,outputpath,selectfunction,lockfunction):#读入参数：要转换的文件夹路径，宽比，高比，灰度阈值倍率，分解子图层数,输出目录,层筛选函数，灰度锁函数
+ def transFer(self,inputpath,wrate,hrate,grate,layer,outputpath,selectfunction,lockfunction,outputType):#读入参数：要转换的文件夹路径，宽比，高比，灰度阈值倍率，分解子图层数,输出目录,层筛选函数，灰度锁函数
     common=pic_common()
     
     for path in os.listdir(inputpath):
@@ -70,8 +70,10 @@ class pic_select:#重要的筛选函数
         
         outputlist=common.readIntoList(inputpath+'/'+path,wrate,hrate,grate,lockfunction)#把图像初次分割为子图集
         outputlist=selectfunction(outputlist,layer,wrate,hrate,image,lockfunction(image,1.005))#根据灰度与层数筛选子图集，可在之后类自定义
-        common.saveImageList(outputlist,image,path,outputpath)#outputlist内子图集合经过变换整合输出到outputpath文件夹
-
+        if outputType==0:
+         common.saveImageListWithoutRectangle(outputlist,image,path,outputpath)#outputlist内子图集合经过变换整合输出到outputpath文件夹
+        if outputType==1:
+         common.saveImageList(outputlist,image,path,outputpath)#outputlist内子图集合经过变换整合输出到outputpath文件夹
 
 parser=argparse.ArgumentParser(description='depart_pic')
 parser.add_argument('--input',type=str,default='input/',help='where the path pictures wanted to be traned,要转换的文件夹路径')
@@ -80,11 +82,13 @@ parser.add_argument('--hrate',type=int,default=5,help='how many pieces the heigh
 parser.add_argument('--grate',type=float,default=1.005,help='the rate geryscale would plus,influences the greyloak and the departture,灰度阈值倍率')
 parser.add_argument('--layer',type=int,default=3,help='how mant times the subgraphs would be departed into subgraphsets,分解子图层数')
 parser.add_argument('--output',type=str,default='output/',help='where the path pictures wanted to be outlist,输出目录')
+parser.add_argument('--depart_type',type=int,default=0,help='draw reactangles or not ,no_rectangle/rectangle,输出图类型')
 def main(args):
     inputdata =parser.parse_args()
     common=pic_common()
     sel=pic_select()#初始化重要筛选类
-    sel.transFer(inputdata.input,inputdata.wrate,inputdata.hrate,inputdata.grate,inputdata.layer,inputdata.output,sel.selectByLayer,common.greylockFunction)
+    sel.transFer(inputdata.input,inputdata.wrate,inputdata.hrate,inputdata.grate,inputdata.layer,inputdata.output,sel.selectByLayer,common.greylockFunction,inputdata.depart_type)
+    
     return 0
 
 if __name__ == '__main__':

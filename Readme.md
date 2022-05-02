@@ -7,7 +7,7 @@ wrate：窗口比原图宽的1/N，输入N
 hrate：窗口比原图高的1/M,输入M
 grate：灰度阈值倍率，微调框图效果
 Layer：分解子图层数，越大分解越细，越能精准勾勒轮廓，但耗时增加，一般3-5即可
-框出图符合条件的子图集，从而找出素描主体，本输出矩形框图一幅，取子图集内最左上与最右下输出矩形结果图，为检验准确，以绿框描出最终的子图集查看
+框出图符合条件的子图集，从而找出素描主体，本输出矩形框图一幅，取子图集内最左上与最右下输出矩形结果图，为检验准确，可绿框描出最终的子图集查看
 
 ## GreyDepartCommon.py
 
@@ -59,7 +59,9 @@ class sub_graph:#子图类
 
 <u>calgreyfunction</u>：用来计算灰度指标的函数，自定义，一般传参格式为(image,GreyScaleLock,ImageSource)，把越过灰度锁的子图类中GreyScale标记为1
 
-**saveImageList**(self,imagelist,ImageSource,picname,outputPath)：把imagelist内的子图储存到outputPath文件夹内
+**saveImageList**(self,imagelist,ImageSource,picname,outputPath)：把imagelist内的子图储存到outputPath文件夹内，原图上画小绿框
+
+**saveImageListWithoutRectangle**(self,imagelist,ImageSource,picname,outputPath)：把imagelist内的子图储存到outputPath文件夹内，不过不画框，改为输出最左最右最上最下子图坐标围成的子图
 
 <u>picname</u>：文件名
 
@@ -116,6 +118,20 @@ greylockFunction：计算灰度阈值函数
 '**--layer**',type=int,default=3,help='how mant times the subgraphs would be departed into subgraphsets,分解子图层数')
 '**--output**',type=str,default='output/',help='where the path pictures wanted to be outlist,输出目录'
 
+'**--depart_type**',type=int,default=0,help='draw reactangles or not ,
+
+0=no_rectangle  1=rectangle,输出图类型'
+
 标准使用：
 
-python depart.py --input input/ --wrate 5 --hrate 5 --grate 1.005 --layer 3   --output output/
+python depart.py --input input/ --wrate 5 --hrate 5 --grate 1.005 --layer 3   --output output/  --depart_type 0 
+
+则效果为：将文件夹下/input目录的所有图片读入为灰度图，按已经定义的
+wrate：窗口比原图宽的1/5
+hrate：窗口比原图高的1/5
+grate：灰度阈值倍率1.005
+layer：分解子图层数3
+
+depart_type:0 代表不画框
+
+框出图符合条件的子图集，从而找出素描主体

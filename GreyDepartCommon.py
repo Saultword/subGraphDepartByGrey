@@ -76,6 +76,17 @@ class pic_common:#一些通用函数
         outputImage=self.draw_rectangle_by_point(i,outputImage)
     cv2.imwrite(outputPath+"after_"+picname, outputImage)    #保存参数
  @classmethod
+ def saveImageListWithoutRectangle(self,imagelist,ImageSource,picname,outputPath):#保存子图列表内图片,不画方框且截图
+    if imagelist==None:
+      print("None image limited")
+      exit()
+    t=0
+    outputImage=ImageSource
+    
+    
+    outputImage=self.get_departed_pic(imagelist,outputImage)
+    cv2.imwrite(outputPath+"after_"+picname, outputImage)    #保存参数
+ @classmethod
  def draw_rectangle_by_point(self,image,ImageSource):#画框函数，可扩展性不强，用于子图集可视化
     image2 = ImageSource
     point=[image.x,image.y,image.x+image.width,image.y+image.height]#左上右下的点集
@@ -89,6 +100,27 @@ class pic_common:#一些通用函数
     #cv2.putText(image2, '('+str(image.x)+','+str(image.y)+')', first_point, cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=(255,0,0), thickness=1)#在矩形框上方绘制该框的名
     
     return image2
+
+
+
+ @classmethod
+ def get_departed_pic(self,imagelist,ImageSource):#输出主体图
+#像素图的坐标轴是向右x增大，向下y增大
+     left_max=ImageSource.shape[1]#宽度最低，初始最远，为正数x
+     right_max=0#宽度最长,初始0
+     top_max=ImageSource.shape[0]#越小越靠上，初始在图的最底下,为正数y，理想情况是图最顶上的y坐标
+     under_max=0#越高越靠下，初始0,就在顶上，理想情况下是在图最底下点的y坐标
+     for i in imagelist:
+       if i.x<left_max:
+           left_max=i.x
+       if i.x>right_max:
+           right_max=i.x
+       if i.y<top_max:
+          top_max=i.y
+       if i.y>under_max:
+          under_max=i.y
+          
+     return ImageSource[top_max:under_max, left_max:right_max]
  @classmethod
  def FindOneInList(self,imagelist,x,y):#find a subgraph in imagelist 
     
